@@ -1,21 +1,46 @@
-<!doctype html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCdAb96ekVOdqHZv8O3rMIwxKf_WdRA65M&callback=initMap&libraries=&v=weekly"
+      defer
+    ></script>
+    <style type="text/css">
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
 
-<html lang="en">
-<head>
-  <meta charset="utf-8">
+      /* Optional: Makes the sample page fill the window. */
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script>
+      (function(exports) {
+        "use strict";
 
-  <title>resto Maps</title>
-  <meta name="description" content="Kirby Restomaps Page">
-  <meta name="author" content="Kirby Agudelo">
+        function initMap() {
+          exports.map = new google.maps.Map(document.getElementById("map"), {
+            center: {
+              lat: 10.306651,
+              lng: 123.8894057
+            },
+            zoom: 15
+          });
+        }
 
-  
-
-</head>
-
-<body>
-  updated hello resto maps !
-
-<h3>updated via local machine again from local</h3>
-
-</body>
+        exports.initMap = initMap;
+      })((this.window = this.window || {}));
+    </script>
+  </head>
+  <body>
+    <div id="map"></div>
+  </body>
 </html>
