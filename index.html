@@ -163,7 +163,7 @@
             if( ! value ){
               value = 'restaurant';
             }
-            console.log("value="+value);
+            
 
             var request = {
               location: exports.defaultBounds,
@@ -179,12 +179,8 @@
             map: exports.map
           });
 
-
             // clear markers first
-            console.log("clearing markers");
             exports.markers = [];
-            console.log(exports.markers)
-
             exports.service.nearbySearch(request, fetch_results );
             
           };
@@ -233,7 +229,6 @@
           var directionsLink = document.createElement("a");
           directionsLink.addEventListener("click", function( e ){  
             e.preventDefault();
-            console.log("click") 
             getDirectionsFrom(place.geometry.location.lat(), place.geometry.location.lng())
             
           } );
@@ -258,8 +253,6 @@
           google.maps.event.addListener(marker, "click", function() {
             //exports.infowindow.setContent(place.name + '<br/>'+directions_link);
             exports.infowindow.setContent(info_content);
-            
-            console.log(place.geometry.location.lat());
             exports.infowindow.open(exports.map, this);
           });
         }
