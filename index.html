@@ -92,8 +92,12 @@
 
         // initialize marker conteiner
         exports.markers = [];
+
+        // initial location
         function initMap() {
           
+          exports.pointA = new google.maps.LatLng(10.309705, 123.894231);
+
 
           // 10.3098652,123.8932038
 
@@ -101,6 +105,11 @@
 
           // for restaurant type panel
           exports.directionsRenderer = new google.maps.DirectionsRenderer();
+
+
+
+          
+
 
           // this is to display info on map item
           exports.infowindow = new google.maps.InfoWindow();
@@ -115,6 +124,15 @@
           // configure panel
           exports.directionsRenderer.setMap(exports.map);
           exports.directionsRenderer.setPanel(document.getElementById("right-panel"));
+
+
+
+          exports.directionsService = new google.maps.DirectionsService;
+          exports.directionsDisplay = new google.maps.DirectionsRenderer({
+            map: exports.map
+          });
+          
+
 
 
           // end panel config
@@ -136,11 +154,8 @@
             }
           }
 
-
           exports.service = new google.maps.places.PlacesService(exports.map);
           exports.service.nearbySearch(request, fetch_results );
-
-
 
           var onChangeHandler = function( e ) {
 
@@ -157,6 +172,13 @@
             };
             
             exports.markers.forEach( function(item, index){ item.setMap(null) } );
+            // clear directions
+            // reset display
+            exports.directionsDisplay.setMap(null);
+            exports.directionsDisplay = new google.maps.DirectionsRenderer({
+            map: exports.map
+          });
+
 
             // clear markers first
             console.log("clearing markers");
@@ -171,6 +193,34 @@
 
         }
 
+        // var pointB = new google.maps.LatLng(10.309196, 123.902166);
+
+        //calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB);
+
+        function calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB) {
+          directionsService.route({
+            origin: pointA,
+            destination: pointB,
+            travelMode: google.maps.TravelMode.DRIVING
+          }, function(response, status) {
+            if (status == google.maps.DirectionsStatus.OK) {
+              directionsDisplay.setDirections(response);
+            } else {
+              window.alert('Directions request failed due to ' + status);
+            }
+          });
+        } 
+
+
+        function getDirectionsFrom(location_lat, location_lng){
+          var pointB = {
+              lat: location_lat,
+              lng: location_lng
+            };
+          calculateAndDisplayRoute(exports.directionsService, exports.directionsDisplay, exports.pointA, pointB);
+
+        }
+
 
         function createMarker(place) {
           var marker = new google.maps.Marker({
@@ -180,9 +230,36 @@
 
           exports.markers.push(marker);
 
+          var directionsLink = document.createElement("a");
+          directionsLink.addEventListener("click", function( e ){  
+            e.preventDefault();
+            console.log("click") 
+            getDirectionsFrom(place.geometry.location.lat(), place.geometry.location.lng())
+            
+          } );
+
+
+          directionsLink.innerHTML = "Get Directions";
+          
+          directionsLink.setAttribute( 'href', '#'  ) ;
+
+          var placeName = document.createElement("span");
+          placeName.innerHTML = place.name;
+
+          var info_content = document.createElement("div");
+          info_content.appendChild(placeName);
+          info_content.appendChild(document.createElement("br"));
+          info_content.appendChild(directionsLink);
+
+
+          //var directions_link = '<a href="#" onClick="getDirectionsFrom( ' +place.geometry.location.lat()+  ', '+ place.geometry.location.lng() +'  )">get directions</a>';
+          var directions_link = directionsLink.innerHTML;
 
           google.maps.event.addListener(marker, "click", function() {
-            exports.infowindow.setContent(place.name);
+            //exports.infowindow.setContent(place.name + '<br/>'+directions_link);
+            exports.infowindow.setContent(info_content);
+            
+            console.log(place.geometry.location.lat());
             exports.infowindow.open(exports.map, this);
           });
         }
