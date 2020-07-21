@@ -114,31 +114,30 @@
 
           exports.service = new google.maps.places.PlacesService(exports.map);
           
+          /* setup autocomplete box*/
+          var input = document.getElementById("autoinput");
+          input.addEventListener("click", function( e ){
+            this.value = "";
+          })
+          
+          exports.autocomplete = new google.maps.places.Autocomplete(input);
 
-            /* setup autocomplete box*/
-            var input = document.getElementById("autoinput");
-            exports.autocomplete = new google.maps.places.Autocomplete(input);
+          // Bind the map's bounds (viewport) property to the autocomplete object,
+          // so that the autocomplete requests use the current map bounds for the
+          // bounds option in the request.
+          exports.autocomplete.bindTo('bounds', exports.map);
 
-            // Bind the map's bounds (viewport) property to the autocomplete object,
-            // so that the autocomplete requests use the current map bounds for the
-            // bounds option in the request.
-            exports.autocomplete.bindTo('bounds', exports.map);
+          // Set the data fields to return when the user selects a place.
+          exports.autocomplete.setFields(
+          ['address_components', 'geometry', 'icon', 'name']);
 
-            // Set the data fields to return when the user selects a place.
-            exports.autocomplete.setFields(
-            ['address_components', 'geometry', 'icon', 'name']);
+          autocomplete.addListener('place_changed', function() {
+            var place = autocomplete.getPlace();
+              exports.mapCenter = place.geometry.location;
+              init_after_location_resolved( { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() } ) ;
+          } );
 
-            autocomplete.addListener('place_changed', function() {
-              var place = autocomplete.getPlace();
-                console.log(place);
-
-                exports.mapCenter = place.geometry.location;
-                console.log(place.geometry.location);
-
-                init_after_location_resolved( { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() } ) ;
-            } );
-
-            /* end setup autocomplete box*/
+          /* end setup autocomplete box*/
 
 
 
@@ -151,6 +150,7 @@
             exports.defaultBounds = new google.maps.LatLng(loc.lat, loc.lng );
 
             exports.map.setCenter(loc);
+            exports.map.setZoom( 15 );
 
 
             if( exports.cityCircle ){
@@ -178,31 +178,21 @@
 
           function initial_load_search( loc ){
 
-            console.log('initial search');
             var request = {
               location: loc,
               radius: exports.radius,
               type: exports.restaurantTypes
             };
 
-            
             exports.markers.forEach( function(item, index){ item.setMap(null) } );
-            
 
             exports.service.nearbySearch(request, fetch_results );
 
-
           }
-
-
-
 
           // get current location if available
           if ( navigator.geolocation) {
-            console.log('location available');
-            
             navigator.geolocation.getCurrentPosition(function(position) {
-              console.log('location allowed');
               exports.mapCenter = {
                 lat: position.coords.latitude,
                 lng: position.coords.longitude
@@ -211,17 +201,12 @@
               init_after_location_resolved( loc );
 
             }, function(err) {
-              console.log(err);
-              console.log('location not permitted');
               init_after_location_resolved( exports.mapCenter );
             },
             {timeout:3000} );
            } 
           else{
-            console.log('position not available ' );
             init_after_location_resolved( exports.mapCenter );
-            
-            console.log( exports.mapCenter );
           }
           
           init_after_location_resolved( exports.mapCenter );
@@ -305,7 +290,7 @@
           
 
           exports.getPlaceDetail = function( id, format_result ){
-            console.log("using place id: "+ id );
+            
             var request = {
               placeId: id,
               fields: ['name', 'rating', 'formatted_phone_number', 'geometry', 'user_ratings_total']
@@ -398,8 +383,6 @@
             /* place detials */
 
             exports.getPlaceDetail(place.place_id, function(result){
-              console.log('formatting results');
-              console.log( result  );
 
               if( result.user_ratings_total ){
                 // review count
