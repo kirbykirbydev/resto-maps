@@ -104,10 +104,10 @@
           };
 
 
-          exports.mapCenter = { // test
-            lat: 14.5562946,
-            lng: 121.0165715
-          };
+          // exports.mapCenter = { // test
+          //   lat: 14.5562946,
+          //   lng: 121.0165715
+          // };
           
 
 
@@ -165,7 +165,7 @@
 
           function initial_load_search( loc ){
 
-
+            console.log('initial search');
             var request = {
               location: loc,
               radius: exports.radius,
@@ -179,9 +179,17 @@
           }
 
 
+
+
+          
+
+
+
+
           // get current location if available
-          if (navigator.geolocation) {
+          if ( navigator.geolocation) {
             console.log('location available');
+            
             navigator.geolocation.getCurrentPosition(function(position) {
               console.log('location allowed');
               exports.mapCenter = {
@@ -192,23 +200,24 @@
 
               init_after_location_resolved( loc );
 
-              
-              // exports.map.setCenter(exports.mapCenter);
-              // infoWindow.setPosition(pos);
-              // infoWindow.setContent('Location found.');
-              // infoWindow.open(map);
-              // map.setCenter(pos);
-            }, function() {
+
+            }, function(err) {
+              console.log(err);
               console.log('location not permitted');
               init_after_location_resolved( exports.mapCenter );
             },
-            {timeout:10000} );
-          } 
+            {timeout:3000} );
+           } 
           else{
-            init_after_location_resolved( exports.mapCenter );
             console.log('position not available ' );
+            init_after_location_resolved( exports.mapCenter );
+            
             console.log( exports.mapCenter );
           }
+          
+          init_after_location_resolved( exports.mapCenter );
+          
+          
 
 
           
