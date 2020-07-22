@@ -118,6 +118,16 @@
       font-size: 20px;
     }
 
+    /* infowindow */
+    .container {
+      min-width: 400px;
+      padding: 20px;
+    }
+
+    .container #info-venue-name, .container a, .container div {
+      font-size: 40px;
+    }
+
 
   }
 
@@ -455,6 +465,8 @@
             placeName.setAttribute("id", "info-venue-name");
 
             var info_content = document.createElement("div");
+            info_content.setAttribute("class", "container");
+            
             info_content.appendChild(placeName);
             info_content.appendChild(document.createElement("br"));
             info_content.appendChild(directionsLink);
