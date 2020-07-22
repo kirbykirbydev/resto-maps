@@ -29,10 +29,11 @@
     background-color: #fff;
     padding: 5px;
     border: 1px solid #999;
-    text-align: center;
+    /* text-align: center; */
     font-family: "Roboto", "sans-serif";
     line-height: 30px;
     padding-left: 10px;
+    width: 20%;
   }
 
   #right-panel {
@@ -74,6 +75,50 @@
     border: 1px solid #ccc;
     box-shadow: 0 2px 2px rgba(33, 33, 33, 0.4);
     /* display: none; */
+  }
+
+  #search-here {
+    width: 100%;
+  }
+
+  .filter-title{
+    font-weight: 800;
+  }
+
+  @media only screen and (max-width: 1080px){
+    #floating-panel {
+      width: 250px;
+    }
+
+    button{
+      height: 60px;
+    } 
+    
+    #autoinput {
+      height: 60px;
+      font-size: 20px;
+      max-width: 220px;
+    }
+
+    .filter-option {
+      max-width: 200px;
+    }
+
+
+    .radius-butt, #search-here, .filter-option {
+      font-size: 30px;
+      font-weight: 800;
+    }
+
+    #search-here {
+      font-size: 16px;
+    }
+
+    .filter-title{
+      font-size: 20px;
+    }
+
+
   }
 
   @media print {
@@ -449,24 +494,24 @@
 
 
       <div id="pac-container">
-        <span><strong>Search for Area</strong></span><br>
+        <span><strong>Search for Area</strong></span> &nbsp;
         <input id="autoinput" type="text" value="Cebu City"
             placeholder="Enter a location">
       </div>
-
+<br>
       <div>
         <button id="search-here" disabled>Search in current area</button>
         
       </div>
-
+<br>
 
       <div>
-        <span>Search Radius</span><button id="smaller-radius-butt">-</button> <button id="larger-radius-butt">+</button>
+        <span class="filter-title">Search Radius</span> <br> <button id="smaller-radius-butt" class="radius-butt">-</button> <button id="larger-radius-butt" class="radius-butt" >+</button>
       </div>
-
+      <br>
       <div>
-        <strong>Restaurant Types:</strong><br>
-        <select id="restaurant-options">
+        <span class="filter-title">Restaurant Types:</span>  <br>
+        <select id="restaurant-options" class="filter-option" >
           <option value="restaurant">-- Filter --</option>
           <option value="cafe">Cafe</option>
           <option value="meal_delivery" >Meal Delivery</option>
@@ -475,8 +520,8 @@
       </div>
       
       <div>
-        <strong>Cuisine Types:</strong><br>
-        <select id="restaurant-cuisine">
+        <span class="filter-title">Cuisine Types:</span> <br>
+        <select id="restaurant-cuisine" class="filter-option">
           <option value="">-- Filter --</option>
           <option value="japanese">Japanese</option>
           <option value="italian">Italian</option>
