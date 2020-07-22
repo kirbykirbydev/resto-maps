@@ -112,6 +112,38 @@
             zoom: 15
           });
 
+          // display YOU ARE HERE
+          exports.youAreHereMarker = new google.maps.Marker({
+              clickable : false,
+              map: exports.map,
+              //position: exports.pointA,
+              animation: google.maps.Animation.DROP,
+              Symbol : {fillColor:'#00FF00'},
+              MarkerLabel : {fillColor:'#00FF00'},
+              title : "You Are Here"
+            });
+
+
+          exports.map.addListener('dragend', function(e){
+            console.log(exports.map.getCenter().lat());
+
+            document.getElementById('search-here').removeAttribute('disabled');
+            document.getElementById('search-here').disabled=false; //removeAttribute('disabled');
+          });
+
+          // when map is moved, you are here should move also
+          exports.map.addListener('center_changed', function(e){
+            
+            exports.youAreHereMarker.setPosition( exports.map.getCenter() );
+            
+          });
+
+          exports.map.addListener('dragstart', function(e){
+            exports.youAreHereMarker.setVisible(true);
+            
+          });
+
+
           exports.service = new google.maps.places.PlacesService(exports.map);
           
           /* setup autocomplete box*/
@@ -168,6 +200,14 @@
               radius: exports.radius
             });
 
+
+
+            
+
+
+
+
+
             // execute initial search
             initial_load_search( loc );
 
@@ -191,29 +231,38 @@
           }
 
           // get current location if available
-          if ( navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-              exports.mapCenter = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-              };
+          // if ( navigator.geolocation) {
+          //   navigator.geolocation.getCurrentPosition(function(position) {
+          //     exports.mapCenter = {
+          //       lat: position.coords.latitude,
+          //       lng: position.coords.longitude
+          //     };
 
-              init_after_location_resolved( loc );
+          //     init_after_location_resolved( loc );
 
-            }, function(err) {
-              init_after_location_resolved( exports.mapCenter );
-            },
-            {timeout:3000} );
-           } 
-          else{
-            init_after_location_resolved( exports.mapCenter );
-          }
+          //   }, function(err) {
+          //     init_after_location_resolved( exports.mapCenter );
+          //   },
+          //   {timeout:3000} );
+          //  } 
+          // else{
+          //   init_after_location_resolved( exports.mapCenter );
+          // }
           
           init_after_location_resolved( exports.mapCenter );
           
           
 
+          // add behavior to update current search area
+          document.getElementById('search-here').addEventListener('click', function(e){
+            
 
+            init_after_location_resolved(  { lat: exports.map.getCenter().lat(), lng: exports.map.getCenter().lng() }     );
+
+            // disable button after setting current location
+            // to prevent multiple calls to search init
+            this.disabled = true;
+          });
           
 
 
@@ -317,6 +366,11 @@
         //calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB);
 
         function calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB) {
+
+
+          // hide YouAreHere
+          exports.youAreHereMarker.setVisible(false);
+
           directionsService.route({
             origin: pointA,
             destination: pointB,
@@ -336,7 +390,7 @@
               lat: location_lat,
               lng: location_lng
             };
-          calculateAndDisplayRoute(exports.directionsService, exports.directionsDisplay, exports.pointA, pointB);
+          calculateAndDisplayRoute(exports.directionsService, exports.directionsDisplay, exports.youAreHereMarker.getPosition(), pointB);
 
         }
 
@@ -427,11 +481,15 @@
 
 
       <div id="pac-container">
-        <span><strong>Select Area</strong></span><br>
+        <span><strong>Search for Area</strong></span><br>
         <input id="autoinput" type="text" value="Cebu City"
             placeholder="Enter a location">
       </div>
 
+      <div>
+        <button id="search-here" disabled>Search in current area</button>
+        
+      </div>
 
       <div>
         <strong>Restaurant Types:</strong><br>
