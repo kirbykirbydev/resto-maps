@@ -148,11 +148,13 @@
       (function(exports) {
         "use strict";
 
-        // initialize marker conteiner
+        // initialize marker container
         exports.markers = [];
-        exports.radius = 2000 ; // 2km
+        // radius limits
+        exports.radius = 2000 ; // 2km default radius
         exports.maxRadius = 5000 ; // 5km
         exports.minRadius = 100 ; // 100 meters
+
         // initial location
         function initMap() {
           
@@ -172,7 +174,7 @@
             zoom: 15
           });
 
-          // display YOU ARE HERE
+          // YOU ARE HERE marker
           exports.youAreHereMarker = new google.maps.Marker({
               clickable : false,
               map: exports.map,
@@ -187,29 +189,29 @@
               title : "You Are Here"
             });
 
+
+          // add event handler when dragging map
           exports.map.addListener('dragend', function(e){
             console.log(exports.map.getCenter().lat());
-
-            document.getElementById('search-here').removeAttribute('disabled');
-            document.getElementById('search-here').disabled=false; //removeAttribute('disabled');
+            // search here will be enabled
+            document.getElementById('search-here').disabled=false; 
           });
 
           // when map is moved, you are here should move also
           exports.map.addListener('center_changed', function(e){
-            
             exports.youAreHereMarker.setPosition( exports.map.getCenter() );
-            
           });
 
+          // if marker disappears when getting directions, it will reappear when map is moved
           exports.map.addListener('dragstart', function(e){
             exports.youAreHereMarker.setVisible(true);
-            
           });
 
           // add event to radius buttons
           document.getElementById('smaller-radius-butt').addEventListener('click', function(){
             let decrement = 500;
             if(exports.radius > exports.minRadius ){
+              // reduces decrement value in smaller radius
               if(exports.radius <= 1000){
                 decrement = 100;
               }
@@ -221,9 +223,8 @@
 
           document.getElementById('larger-radius-butt').addEventListener('click', function(){
             let increment = 500;
-            
             if(exports.radius <= exports.maxRadius ){
-
+              // reduces increment level when radius is still small
               if(exports.radius <= 2000){
                 increment = 100;
               }
@@ -261,6 +262,7 @@
 
           /* end setup autocomplete box*/
 
+          // function that inizializes the app everytime location is changed
           function init_after_location_resolved( loc ){
             // just in case
             exports.mapCenter = loc;
@@ -306,6 +308,9 @@
 
           }
 
+          /**
+          could not get location, feature is disabled in favor of manual location declaration
+          */
           // get current location if available
           // if ( navigator.geolocation) {
           //   navigator.geolocation.getCurrentPosition(function(position) {
