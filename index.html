@@ -61,7 +61,10 @@
     overflow: auto;
   }
 
-  
+  .gm-style-iw-d #info-venue-name {
+    font-size: 20px;
+    font-weight: 600;
+  }
 
   #floating-panel {
     background: #fff;
@@ -92,7 +95,9 @@
 
         // initialize marker conteiner
         exports.markers = [];
-        exports.radius = 3000 ; // 2km
+        exports.radius = 2000 ; // 2km
+        exports.maxRadius = 5000 ; // 5km
+        exports.minRadius = 100 ; // 100 meters
         // initial location
         function initMap() {
           
@@ -116,13 +121,16 @@
           exports.youAreHereMarker = new google.maps.Marker({
               clickable : false,
               map: exports.map,
+              icon : {
+                url : "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+                size : new google.maps.Size(50, 50)
+              },
               //position: exports.pointA,
               animation: google.maps.Animation.DROP,
               Symbol : {fillColor:'#00FF00'},
               MarkerLabel : {fillColor:'#00FF00'},
               title : "You Are Here"
             });
-
 
           exports.map.addListener('dragend', function(e){
             console.log(exports.map.getCenter().lat());
@@ -143,6 +151,33 @@
             
           });
 
+          // add event to radius buttons
+          document.getElementById('smaller-radius-butt').addEventListener('click', function(){
+            let decrement = 500;
+            if(exports.radius > exports.minRadius ){
+              if(exports.radius <= 1000){
+                decrement = 100;
+              }
+              exports.radius -= decrement ; 
+              document.getElementById('search-here').disabled=false
+              exports.cityCircle.setRadius(exports.radius);
+            }
+          });
+
+          document.getElementById('larger-radius-butt').addEventListener('click', function(){
+            let increment = 500;
+            
+            if(exports.radius <= exports.maxRadius ){
+
+              if(exports.radius <= 2000){
+                increment = 100;
+              }
+
+              exports.radius += increment; 
+              exports.cityCircle.setRadius(exports.radius);
+              document.getElementById('search-here').disabled=false
+            }
+          });
 
           exports.service = new google.maps.places.PlacesService(exports.map);
           
@@ -171,8 +206,6 @@
 
           /* end setup autocomplete box*/
 
-
-
           function init_after_location_resolved( loc ){
             // just in case
             exports.mapCenter = loc;
@@ -183,7 +216,6 @@
 
             exports.map.setCenter(loc);
             exports.map.setZoom( 15 );
-
 
             if( exports.cityCircle ){
               exports.cityCircle.setMap(null);
@@ -200,21 +232,10 @@
               radius: exports.radius
             });
 
-
-
-            
-
-
-
-
-
             // execute initial search
             initial_load_search( loc );
 
-
-
           }
-
 
           function initial_load_search( loc ){
 
@@ -250,8 +271,6 @@
           // }
           
           init_after_location_resolved( exports.mapCenter );
-          
-          
 
           // add behavior to update current search area
           document.getElementById('search-here').addEventListener('click', function(e){
@@ -264,11 +283,6 @@
             this.disabled = true;
           });
           
-
-
-
-
-
           // configure panel
           exports.directionsRenderer.setMap(exports.map);
           exports.directionsRenderer.setPanel(document.getElementById("right-panel"));
@@ -279,8 +293,6 @@
           });
           // end panel config
 
-          
-
           function fetch_results( results, status  ){
             if (status === google.maps.places.PlacesServiceStatus.OK) {
               for (var i = 0; i < results.length; i++) {
@@ -290,9 +302,6 @@
               //exports.map.setCenter(results[0].geometry.location);
             }
           }
-
-          
-          
 
           var onChangeHandler = function( e ) {
 
@@ -334,39 +343,20 @@
           document.getElementById("restaurant-options").addEventListener('change', onChangeHandler );
           document.getElementById("restaurant-cuisine").addEventListener('change', onChangeHandler );
           
-
-
-          
-
           exports.getPlaceDetail = function( id, format_result ){
             
             var request = {
               placeId: id,
               fields: ['name', 'rating', 'formatted_phone_number', 'geometry', 'user_ratings_total']
             };
-            // var request = {
-            //   placeId: 'ChIJN1t_tDeuEmsRUsoyG83frY4',
-            //   fields: ['name', 'rating', 'formatted_phone_number', 'geometry']
-            // };
-
 
             exports.service.getDetails(request, function(result, status){
               format_result(result);
-
             });
-
-
           }
-
-
         }
 
-        // var pointB = new google.maps.LatLng(10.309196, 123.902166);
-
-        //calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB);
-
         function calculateAndDisplayRoute(directionsService, directionsDisplay, pointA, pointB) {
-
 
           // hide YouAreHere
           exports.youAreHereMarker.setVisible(false);
@@ -384,7 +374,6 @@
           });
         } 
 
-
         function getDirectionsFrom(location_lat, location_lng){
           var pointB = {
               lat: location_lat,
@@ -394,7 +383,6 @@
 
         }
 
-
         function createMarker(place) {
           var marker = new google.maps.Marker({
             map: exports.map,
@@ -403,13 +391,7 @@
 
           exports.markers.push(marker);
 
-
-
-
-
           google.maps.event.addListener(marker, "click", function() {
-
-
 
             /* format contents of info box */
             var directionsLink = document.createElement("a");
@@ -425,14 +407,13 @@
 
             var placeName = document.createElement("span");
             placeName.innerHTML = place.name;
+            placeName.setAttribute("id", "info-venue-name");
 
             var info_content = document.createElement("div");
             info_content.appendChild(placeName);
             info_content.appendChild(document.createElement("br"));
             info_content.appendChild(directionsLink);
             /* end info formatting */
-
-
 
             /* place detials */
 
@@ -444,30 +425,17 @@
                 placeReviewCountElem.innerHTML = result.user_ratings_total + " have reviewed this place";
                 info_content.appendChild(placeReviewCountElem);
               }
-              
-
-
-
 
             } );
 
-
             /* end place details */
-
-
-
 
             exports.infowindow.setContent(info_content);
             exports.infowindow.open(exports.map, this);
 
-
-
-
-
           });
         }
         
-
         exports.createMarker = createMarker;
 
         exports.initMap = initMap;
@@ -489,6 +457,11 @@
       <div>
         <button id="search-here" disabled>Search in current area</button>
         
+      </div>
+
+
+      <div>
+        <span>Search Radius</span><button id="smaller-radius-butt">-</button> <button id="larger-radius-butt">+</button>
       </div>
 
       <div>
