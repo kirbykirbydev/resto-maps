@@ -203,7 +203,7 @@
 
           // add event handler when dragging map
           exports.map.addListener('dragend', function(e){
-            console.log(exports.map.getCenter().lat());
+            
             // search here will be enabled
             document.getElementById('search-here').disabled=false; 
           });
@@ -365,12 +365,21 @@
           // end panel config
 
           function fetch_results( results, status  ){
+
+            // each time a serach is done, directions should be removed
+            if(exports.directionsDisplay){
+              exports.directionsDisplay.setMap(null);
+            }
+            
+            exports.directionsDisplay = new google.maps.DirectionsRenderer({
+              map: exports.map
+            });
+
+
             if (status === google.maps.places.PlacesServiceStatus.OK) {
               for (var i = 0; i < results.length; i++) {
-
                 createMarker(results[i]);
               }
-              //exports.map.setCenter(results[0].geometry.location);
             }
           }
 
@@ -401,9 +410,7 @@
             // clear directions
             // reset display
             exports.directionsDisplay.setMap(null);
-              exports.directionsDisplay = new google.maps.DirectionsRenderer({
-              map: exports.map
-            });
+
 
             // clear markers first
             exports.markers = [];
