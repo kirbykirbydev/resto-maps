@@ -79,6 +79,7 @@
 
   #search-here {
     width: 100%;
+    
   }
 
   .filter-title{
@@ -104,14 +105,24 @@
       max-width: 200px;
     }
 
-
     .radius-butt, #search-here, .filter-option {
       font-size: 30px;
       font-weight: 800;
     }
 
+    .radius-butt {
+      margin: 0px 15px;
+      height: 90px;
+      width: 90px;
+      font-size: 40px;
+    }
+
+    #search-radius-label {
+      font-size: 30px;
+    }
+
     #search-here {
-      font-size: 16px;
+      font-size: 30px;
     }
 
     .filter-title{
@@ -517,13 +528,13 @@
       </div>
 <br>
       <div>
-        <button id="search-here" disabled>Search in current area</button>
+        <button id="search-here" disabled>Search Here</button>
         
       </div>
 <br>
 
       <div>
-        <span class="filter-title">Search Radius</span> <br> <button id="smaller-radius-butt" class="radius-butt">-</button> <button id="larger-radius-butt" class="radius-butt" >+</button>
+        <span id="search-radius-label" class="filter-title">Search Radius</span> <br> <button id="smaller-radius-butt" class="radius-butt">-</button> <button id="larger-radius-butt" class="radius-butt" >+</button>
       </div>
       <br>
       <div>
