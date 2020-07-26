@@ -86,6 +86,11 @@
     font-weight: 800;
   }
 
+  .operating-hours {
+    margin-top: 10px;
+
+  }
+
   @media only screen and (max-width: 1080px){
     #floating-panel {
       width: 250px;
@@ -174,7 +179,7 @@
             lng: 123.8960727
           };
 
-          exports.restaurantTypes = [ 'restaurant', 'cafe', 'meal_delivery', 'meal_delivery'] ;
+          exports.restaurantTypes = [ 'restaurant'] ;
 
           // for restaurant type panel
           exports.directionsRenderer = new google.maps.DirectionsRenderer();
@@ -425,7 +430,7 @@
             
             var request = {
               placeId: id,
-              fields: ['name', 'rating', 'formatted_phone_number', 'geometry', 'user_ratings_total']
+              fields: ['name', 'rating', 'formatted_phone_number', 'geometry', 'user_ratings_total', 'opening_hours', 'rating' ]
             };
 
             exports.service.getDetails(request, function(result, status){
@@ -504,6 +509,24 @@
                 let placeReviewCountElem = document.createElement("div");
                 placeReviewCountElem.innerHTML = result.user_ratings_total + " have reviewed this place";
                 info_content.appendChild(placeReviewCountElem);
+
+
+                if(result.rating){
+                  info_content.appendChild( document.createElement("div").appendChild( document.createTextNode("rating: "+ result.rating ) )   );
+                }
+
+                let placeOpeningHours = document.createElement("div");
+                placeOpeningHours.setAttribute('class' , 'operating-hours');
+                placeOpeningHours.appendChild( document.createTextNode( "Operating Hours" ) )
+                if(result.opening_hours){
+                  result.opening_hours.weekday_text.forEach( function(item){
+                    let sched = document.createElement("div");
+                    sched.appendChild( document.createTextNode(item ) );
+                    placeOpeningHours.appendChild( sched  );
+                  } );
+                }
+                info_content.appendChild(placeOpeningHours);
+
               }
 
             } );
@@ -548,7 +571,6 @@
         <span class="filter-title">Restaurant Types:</span>  <br>
         <select id="restaurant-options" class="filter-option" >
           <option value="restaurant">-- Filter --</option>
-          <option value="cafe">Cafe</option>
           <option value="meal_delivery" >Meal Delivery</option>
           <option value="meal_takeaway" >Meal Takeaway</option>
         </select>
